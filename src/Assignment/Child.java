@@ -10,7 +10,6 @@ public class Child extends Person implements parent {
 		parent.add(parent1);
 		parent.add(parent2);
 	}
-	@Override
 	public void setParent(String p1,String p2) {
 		parent.add(p1);
 		parent.add(p2);

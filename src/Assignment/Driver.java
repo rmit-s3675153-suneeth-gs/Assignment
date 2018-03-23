@@ -18,12 +18,16 @@ public class Driver {
 	public void HardCodeData(){
 		
 		int i=4;
-		list[value]  = new Adult("Suneeth",26,"xyz.ph","Studying at rmit",1);
+		list[value]  = new Adult("Suneeth",26,"xyz.ph","Studying at rmit",1,0);
 		AddAdult(list[value] );value++;
-		list[value]  = new Adult("James",40,"james.ph","Married",2);
-		AddAdult(list[value] );value++;
-		list[value]  = new Adult("Rose",36,"rose.ph","Married",3);
-		AddAdult(list[value] );value++;
+		list[value]  = new Adult("James",40,"james.ph","Married",2,1);
+		((Adult)list[value]).setChild("Joe");
+		AddAdult(list[value] );
+		value++;
+		list[value]  = new Adult("Rose",36,"rose.ph","Married",3,1);
+		AddAdult(list[value] );
+		((Adult)list[value]).setChild("Joe");
+		value++;
 		list[value] = new Child("Joe",15,"joe.ph","Works at mac",4,"James","Rose");
 		AddChild(list[value]);value++;
 		ArrayList<String> temp2 = new ArrayList<String>();
@@ -74,9 +78,8 @@ public class Driver {
 		Status.add(list.getStatus());
 		Photo.add(list.getPhoto());
 		Key.add(list.getKey());
-		ChildParent.add(((Child) list).getParent1());
-		ChildParent.add(((Child) list).getParent2());
-		System.out.println(friendList+"EWERwwer");
+		//ChildParent.add(((Child) list).getParent1());
+		//ChildParent.add(((Child) list).getParent2());
 	}
 	
 	public ArrayList<String>ListUser(){
@@ -125,13 +128,17 @@ public class Driver {
 			friendList.add(null);
 			trackList.add(null);
 			int index=getTrackIDposition(New_key);
+			
 			addParentasFriend(New_key,name,parent1,KeyfromName(parent1));
 			addParentasFriend(New_key,name,parent2,KeyfromName(parent2));
-			System.out.println("friendList");System.out.println(friendList);
+			((Adult) list[KeyfromName(parent1)-1]).setChild(name);
+			((Adult) list[KeyfromName(parent1)-1]).incrementChild();
+			((Adult) list[KeyfromName(parent2)-1]).setChild(name);
+			((Adult) list[KeyfromName(parent2)-1]).incrementChild();
 			
 		}
 	
-		list[value]= new Child(name,age,photo,status,New_key,parent1,parent2);System.out.println(friendList);
+		list[value]= new Child(name,age,photo,status,New_key,parent1,parent2);
 		AddChild(list[value]);
 		value++;
 	}
@@ -207,19 +214,39 @@ public class Driver {
 			System.out.println("Enter the Age");
 			age = sc.nextInt();
 		}while(age<16);
-		System.out.println("Enter the Key");
-		list[value]= new Adult(name,age,photo,status,new_key);
+		System.out.println("Enter Number of children");
+		int number = sc.nextInt();
+		ArrayList<String> _temp_child= new ArrayList<String>();
+		for(int i=1;i<=number;i++){
+			System.out.println("Enter the child");
+			String chname = sc.nextLine();
+			int childexists=0;
+			for(int j=0;j<Users.size();j++){
+				if(chname.equals(Users.get(j))){
+					childexists++;
+					((Adult) list[value]).setChild(chname);
+					break;
+				}
+			}
+			if(childexists==0){
+				System.out.println("Entered child doesnt exists, Please enter a valid user");
+				EnterAdult(choice,new_key);
+			}
+		}
+		list[value]= new Adult(name,age,photo,status,new_key,number);
+		
 		AddAdult(list[value]);
 		value++;
 		
 	}
 	public void Menu(){
 		int input=0;
-		do{
+		do{	System.out.println("MiniNet Menu");
+		System.out.println("=================================");
 			System.out.println("1.List everyone");
 			System.out.println("2.Select a person");
 			System.out.println("3.Add an User");
-			System.out.println("8.Exit");
+			System.out.println("4.Exit");
 			Scanner sc = new Scanner(System.in);
 			input=sc.nextInt();
 			switch(input){
@@ -228,55 +255,65 @@ public class Driver {
 			case 2: int id=SelectUser();
 					break;
 			case 3:	int key=AddUser();
-
-					System.out.println(friendList);
-					System.out.println(key+"key is");
 					int j;		
 					for(j=0;j<Key.size();j++){
 						if(key==Key.get(j))
 							break;
 					}
+					System.out.println(key);
+					System.out.println(Age.get(j));
 					if(Age.get(j)>16){
-						System.out.println("!23123");
 						trackID.add(key);
 						friendList.add(null);
 						trackList.add(null);
-						//System.out.println(friendList);
 					}
 					int in;
 					do{
 						System.out.println("1.Add friends");
-						System.out.println("2.Add Dependency");
-						System.out.println("3.exit");
-						System.out.println(friendList);
-						System.out.println(trackID);
+						System.out.println("2.exit");
 						in =sc.nextInt();
 						switch(in){
 						case 1:	if(Age.get(j)>16)
 									addFriend(key,Users.get(j));
-								else if(Age.get(j)>4&&Age.get(j)<=16)
-									addOtherDependent(key,Users.get(j),Age.get(j));
+								else if(Age.get(j)>4&&Age.get(j)<=16){
+									System.out.println(key+" "+Users.get(j)+" "+Age.get(j));
+									addOtherDependent(key,Users.get(j),Age.get(j));}
 								else
 									System.out.println("UnderAge :Sorry cant have friends, come when you growup" );
 								break;
 						}
-					}while(in<3);
+					}while(in<2);
 					break;
 			}
 			
-		}while(input!=8);
+		}while(input!=4);
 	}
 	private void addOtherDependent(int key,String name,int age) {
 		String name_depend;
 		int key_dep,index;
+		int check_flag=0;
 		int flag=0;
 		index=getTrackIDposition(key);
 		Scanner sc = new Scanner(System.in);
 		System.out.println("Enter the name of your dependent friend");
 		name_depend=sc.nextLine();
-		System.out.println("Enter the age of your dependent friend");
+		System.out.println("Enter the key of your dependent friend");
 		key_dep=sc.nextInt();
+		
 		int i;
+		for(i=0;i<Users.size();i++)
+			if(name_depend.equals(Users.get(i))){
+				check_flag++;
+				break;
+			}
+		if(check_flag==0){
+			System.out.println("User doesnt exists");
+			addOtherDependent(key,name,age);
+		}
+		if(Age.get(i)>16){
+			System.out.println("The entered user is not a child ! Please try again!");
+			addOtherDependent(key,name,age);
+		}
 		String Parent1=((Child) list[key-1]).getParent1();
 		String Parent2=((Child) list[key-1]).getParent2();
 		String _depParent1=((Child) list[key_dep-1]).getParent1();
@@ -288,6 +325,8 @@ public class Driver {
 			}
 		int position_of_dep =i;
 		int proceedflag=0;
+		int dep_age=Age.get(position_of_dep);
+		System.out.println(age+" "+dep_age);
 		if(flag==0)
 			System.out.println("That friend doesnt exists!, Please make sure he/she exists in the system");
 		else{
@@ -298,11 +337,11 @@ public class Driver {
 				age_upperlimit=16;
 			if(age_lowerlimit<3)
 				age_lowerlimit=3;
-			int dep_age=Age.get(position_of_dep);
-			if(age>dep_age)
-				if(dep_age<=age_upperlimit&&dep_age>=(age_lowerlimit))
+			
+			if(dep_age<=age_upperlimit&&dep_age>=(age_lowerlimit))
 					proceedflag++;
 			if(proceedflag==1){
+				System.out.println("Aasd");
 				if(Parent1.equals(_depParent2)||Parent1.equals(_depParent1)||Parent2.equals(_depParent2)||Parent2.equals(_depParent1)){
 					System.out.println("Parents Should be mutually exclusive");
 					addOtherDependent(key,name,age);
@@ -339,11 +378,11 @@ public class Driver {
 		if(flag==0)
 			System.out.println("Sorry: entered friend name doesnt exist, please try again");
 		else{
-			int index = getTrackIDposition(new_user_key);
-			System.out.println();
-			friendAdd(index,friend_name,friend_key,new_user_key);
-			index=getTrackIDposition(friend_key);
-			friendAdd(index,new_user_name,new_user_key,friend_key);
+				int index = getTrackIDposition(new_user_key);
+				System.out.println();
+				friendAdd(index,friend_name,friend_key,new_user_key);
+				index=getTrackIDposition(friend_key);
+				friendAdd(index,new_user_name,new_user_key,friend_key);
 		}
 		
 	}
@@ -393,24 +432,41 @@ public class Driver {
 				break;//takeage.get
 			}
 		}
+		int age= Age.get(i);
 		if(flag==0)
 			SelectUser();
 		int selection;
-		do{
+		do{	System.out.println("SubMenu");
+			System.out.println();
 			System.out.println("1.Add friends");
-			System.out.println("2.Add Dependency");
-			System.out.println("3.delete friends");
+			System.out.println("2.show Parent/Child");
+			System.out.println("3.Find Directfriend or not");
 			System.out.println("4.delete account");
 			System.out.println("5.display user ");
 			System.out.println("6.exit");
 			selection=sc.nextInt();
 			switch(selection){
-			case 1:	addFriend(key,name);
+			case 1:	if(age>16)
+						addFriend(key,name);
+					else
+						addOtherDependent(key,name,age);
+					break;
+			case 2: if(age<=16)
+						list_Parent(key);
+					else{
+						int count=((Adult) list[key-1]).getcount();
+						if(count==0)
+							System.out.println("No Children exists");
+						else
+							list_Child(key);
+					}
+					break;
+			case 3:	Findfriend(key);
 					break;
 			case 4: DeleteAccount(key);
 					Menu();
 					break;
-case 5: DisplayProfile(i);
+			case 5: DisplayProfile(i);
 					break;
 			}
 		}while(selection!=6);
@@ -444,7 +500,7 @@ case 5: DisplayProfile(i);
 		int delete_position=i;
 		String name=Users.get(delete_position);
 		if(flag==0){
-			System.out.println("Doesnt know exist-Enter a valid id");
+			System.out.println("Doesnt exist-Enter a valid id");
 		}
 		else{
 			for(j=0;j<trackID.size();j++){
@@ -473,6 +529,7 @@ case 5: DisplayProfile(i);
 				}
 				
 			}
+			((Adult) list[Key.get(delete_position)-1])._delete_child();
 			Users.remove(delete_position);
 			Key.remove(delete_position);
 			Status.remove(delete_position);
@@ -483,7 +540,55 @@ case 5: DisplayProfile(i);
 		
 		
 	}
-	public void Findfriend(){
+	public void Findfriend(int key){
+		Scanner sc = new Scanner(System.in);
+		System.out.println("Enter the friend you want to find ");
+		String name = sc.nextLine();
+		System.out.println("Enter the id");
+		int id = sc.nextInt();
+		int i,flag=0;
+		for(i=0;i<trackID.size();i++){
+			if(key==trackID.get(i)){
+				break;
+			}
+		}
+		int index=i;
+		for(i=0;i<Users.size();i++){
+			if(name.equals(Users.get(i))){
+				flag++;
+				break;
+			}
+		}
+		if(flag==0){
+			System.out.println("User doesnt exists !");
+		}else{
+			flag=0;
+			for(i=0;i<friendList.get(index).size();i++){
+				if(name.equals(friendList.get(index).get(i))){
+					flag++;
+					break;
+				}
+			}
+			if(flag==1)
+				System.out.println(name+" is a direct friend to "+Users.get(index));
+			else
+				System.out.println(name+" is not a direct friend to "+Users.get(index));
+				
+		}
+		
+	}
+	public  void list_Parent(int key){
+		System.out.println("THE PARENTS ARE : ");
+		System.out.println(((Child)list[key-1]).getParent1());
+		System.out.println(((Child)list[key-1]).getParent2());
+		
+	}
+	public void list_Child(int key){
+		ArrayList <String>t_child = new ArrayList<String>();
+		t_child=((Adult)list[key-1]).getChild();
+		for(int i=0;i<t_child.size();i++){
+			System.out.println(t_child.get(i));
+		}
 		
 	}
 	//public void 

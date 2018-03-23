@@ -3,16 +3,28 @@ package Assignment;
 import java.util.ArrayList;
 
 public class Adult extends Person {
-	private String friend;
-	//ArrayList<ArrayList<String>> a = new ArrayList<ArrayList<String>>();
-	public Adult(String Name, int Age, String Photo, String Status, int Key) {
+	private  ArrayList<String>child = new ArrayList<String>();
+	private int cchild;
+	public Adult(String Name, int Age, String Photo, String Status, int Key,int cchild) {
 		super(Name, Age, Photo, Status, Key);
+		this.cchild=cchild;
 	}
 	
-	public void setfriend(String f) {
-		friend=f;
+	public void setChild(String f) {
+		child.add(f);
 	}
-	public String getfriend() {
-		return friend;
+	public ArrayList<String> getChild() {
+		return child;
+	}
+	public int _delete_child(){
+		child.clear();
+		cchild=0;
+		return cchild;
+	}
+	public int getcount(){
+		return cchild;
+	}
+	public int incrementChild() {
+		return cchild++;
 	}
 }
