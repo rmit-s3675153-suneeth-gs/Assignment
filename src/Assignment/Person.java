@@ -1,4 +1,4 @@
-package Assignment;
+package Assignment;//Suneeth
 
 import java.util.ArrayList;
 
@@ -9,14 +9,14 @@ public abstract class Person {
 	private String Status;
 	private int Key;
 	private ArrayList<String> friends= new ArrayList<String>();
-	public Person(String Name,int Age,String Photo,String Status,int Key){
+	public Person(String Name,int Age,String Photo,String Status,int Key){//constructor fetching data
 		this.Name=Name;
 		this.Age=Age;
 		this.Photo=Photo;
 		this.Status=Status;
 		this.Key=Key;
 	}
-	public void setName(String s){
+	public void setName(String s){//setters to fetch data
 		Name=s;
 	}
 	public void setKey(int a){
@@ -31,7 +31,7 @@ public abstract class Person {
 	public void setStatus(String s){
 		Status=s;
 	}
-	public String getName(){
+	public String getName(){//getters returning data
 		return Name;
 	}
 	public int getKey(){
